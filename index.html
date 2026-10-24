@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Branch onboarding: issues, framework and clickable prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EDF0F3;--ink:#0F1B2D;--mute:#55637A;--line:#CBD3DD;--card:#fff;--acc:#0B7A5E;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0C1420;--ink:#E6ECF4;--mute:#93A1B5;--line:#26344A;--card:#131F30;--acc:#3DD6A5;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0C1420;--ink:#E6ECF4;--mute:#93A1B5;--line:#26344A;--card:#131F30;--acc:#3DD6A5;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 'DM Sans',system-ui,sans-serif}
+h1,h2{font-family:'Bricolage Grotesque',system-ui,sans-serif;letter-spacing:-.02em;line-height:1.1;margin:0}
+.w{max-width:1080px;margin:0 auto;padding:0 20px}
+header.w{padding-top:48px;padding-bottom:24px}
+h1{font-size:clamp(2rem,5vw,3.2rem);max-width:15ch}
+header p{color:var(--mute);max-width:56ch;margin:14px 0 0}
+nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}
+nav a{color:var(--ink);border:1px solid var(--line);padding:6px 14px;border-radius:99px;text-decoration:none;font-size:14px}
+nav a:hover,nav a:focus-visible{border-color:var(--acc);outline:none}
+section{border-top:1px solid var(--line);padding:44px 0}
+.row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:48px;align-items:start}
+@media(max-width:860px){.row{grid-template-columns:minmax(0,1fr)}}
+h2{font-size:1.7rem;margin-bottom:6px}
+.pri{color:var(--acc);font-weight:600;font-size:14px;margin:0 0 18px}
+h3{font-size:15px;margin:20px 0 4px;font-weight:600}
+.issue p,.issue li{color:var(--mute);margin:0 0 6px;max-width:60ch}
+.issue ul{padding-left:18px;margin:0}
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px}
+.flow span{background:var(--card);border:1px solid var(--line);padding:4px 10px;border-radius:8px;font-size:13px}
+.flow i{color:var(--mute);font-style:normal}
+.stage{display:flex;flex-direction:column;align-items:center;gap:14px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:320px}
+.chip,.ghost{font:inherit;font-size:13px;padding:5px 12px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.chip[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip:focus-visible,.ghost:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.two{display:flex;gap:24px;flex-wrap:wrap;justify-content:center}
+.cap{font-size:13px;color:var(--mute);text-align:center;max-width:300px;margin:0}
+/* phone: fixed device colors */
+.phone{width:300px;height:580px;border-radius:38px;background:#0B1220;padding:10px;box-shadow:0 18px 40px rgba(8,16,30,.28)}
+.scr{background:#fff;color:#16202E;border-radius:28px;height:100%;position:relative;overflow:hidden;display:flex;flex-direction:column;font-size:13px;line-height:1.4}
+.bar{display:flex;align-items:center;gap:8px;padding:14px 14px 10px;border-bottom:1px solid #E6EAF0}
+.bar b{flex:1;font-size:14px}.bar i{font-style:normal;color:#7A8799;font-size:11px}.bar span{font-size:18px;color:#55637A}
+.body{flex:1;padding:14px;overflow:auto}
+.lead{margin:0 0 12px;color:#3B4A5E}
+.tile{display:flex;gap:10px;align-items:center;border:1.5px solid #D5DCE6;border-radius:12px;padding:11px;margin-bottom:9px;cursor:pointer}
+.tile.on{border-color:#0B7A5E;background:#EFFAF6}
+.tile.off{border-style:dashed;opacity:.62;cursor:not-allowed}
+.tile div{flex:1;min-width:0}.tile b{display:block;font-size:13px}.tile small{display:block;color:#66758A;font-size:11.5px}
+.tile small.e{color:#C62828;font-weight:600}
+.logo{width:34px;height:34px;border-radius:9px;background:#16202E;color:#fff;display:grid;place-items:center;font-weight:700}
+.rad{width:18px;height:18px;border-radius:50%;border:2px solid #B4BECC}
+.tile.on .rad{border:5px solid #0B7A5E}.tile.off .rad{visibility:hidden}
+.lnk{display:block;color:#0B7A5E;font-weight:600;margin:12px 0;cursor:pointer;text-decoration:underline}
+.note{font-size:11.5px;color:#66758A}
+.cta{margin:0 14px 14px;padding:13px;border:0;border-radius:12px;background:#0B7A5E;color:#fff;font:600 14px 'DM Sans',sans-serif;cursor:pointer}
+.cta:disabled{background:#C9D1DC;cursor:not-allowed}
+.sec{background:none;color:#0B7A5E;border:0;font:600 13px inherit;cursor:pointer;margin:0 14px 12px;padding:6px}
+.fl{display:block;font-size:11.5px;color:#55637A;margin:10px 0 4px}
+.inp{width:100%;border:1.5px solid #D5DCE6;border-radius:10px;padding:10px;font:500 14px 'DM Sans',sans-serif;color:#16202E;background:#fff}
+.inp.bad{border:2px solid #C62828;background:#FFF6F6}.inp.ro{background:#F2F5F8;color:#7A8799}
+.hint{font-size:11.5px;color:#66758A;margin-top:3px}
+.banner{border-radius:10px;padding:10px 11px;margin-bottom:6px;font-size:12px}
+.banner.err{background:#FDECEC;border:1px solid #C62828;color:#7F1D1D}
+.banner.neu{background:#EEF1F5;border:1px solid #B4BECC;color:#3B4A5E}
+.banner b{display:block;font-size:13px;margin-bottom:2px}
+.banner .acts{display:flex;gap:6px;margin-top:8px}
+.banner .acts button{flex:1;border:1px solid #C62828;background:#fff;color:#7F1D1D;border-radius:8px;padding:6px;font:600 11.5px 'DM Sans',sans-serif;cursor:pointer}
+.mid{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;text-align:center;padding:20px;gap:8px}
+.spin{width:30px;height:30px;border-radius:50%;border:3px solid #D5DCE6;border-top-color:#0B7A5E;animation:sp 0.9s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.spin{animation-duration:3s}.sheet{animation:none!important}}
+.tick{width:48px;height:48px;border-radius:50%;background:#0B7A5E;color:#fff;display:grid;place-items:center;font-size:24px}
+.url{background:#F2F5F8;margin:8px 14px 0;padding:6px 10px;border-radius:8px;font-size:11px;color:#55637A}
+.pin{display:flex;gap:6px;margin:10px 0}.pin i{width:30px;height:36px;border:1.5px solid #D5DCE6;border-radius:8px;display:grid;place-items:center;font-style:normal}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #D5DCE6;box-shadow:0 -10px 24px rgba(8,16,30,.15);border-radius:18px 18px 0 0;padding:16px;animation:up .25s ease-out}
+@keyframes up{from{transform:translateY(100%)}}
+.sheet b{font-size:14px;display:block}.sheet p{margin:2px 0 10px;color:#55637A}.sheet .cta{margin:0 0 6px;width:100%}.sheet .sec{margin:0;width:100%}
+.cd{font-size:11px;color:#7A8799;text-align:center}
+.cam{border:2px dashed #0B7A5E;border-radius:12px;height:170px;display:grid;place-items:center;color:#7A8799;background:#F6F8FA;margin-bottom:10px}
+.warn{color:#B7791F;font-weight:600}
+.rv{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid #E6EAF0;padding:8px 0}.rv span{color:#66758A}.rv em{font-style:normal;color:#B7791F;font-weight:600}
+.ob{display:flex;gap:8px}.ob input{width:100%;min-width:0;text-align:center;border:1.5px solid #D5DCE6;border-radius:10px;padding:10px 2px;font:500 15px 'DM Sans',sans-serif}
+.jumps{margin-top:10px;font-size:12px;color:#C62828;font-weight:600}
+.ok{color:#0B7A5E;font-weight:600;font-size:12px}.er{color:#C62828;font-weight:600;font-size:12px}
+.tag{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:6px;margin-bottom:10px}
+.tag.o{background:#FDECEC;color:#C62828}.tag.n{background:#E3F6EF;color:#0B7A5E}
+</style></head><body>
+<header class="w">
+<h1>Branch onboarding, prototyped</h1>
+<p>Each epic below states the issue, the framework that fixes it, and a clickable prototype of the screens. Click tiles, buttons and the state chips to see how the layout shifts and how errors appear.</p>
+<nav><a href="#e1">Bank verification</a><a href="#e2">DigiLocker fallback</a><a href="#e3">Aadhaar field</a></nav>
+</header>
+
+<section id="e1"><div class="w row">
+<div class="issue">
+<h2>Bank verification and multi-account selection</h2><p class="pri">Highest priority</p>
+<h3>Issue today</h3><p>Users can type wrong account details and the app carries them all the way to the final confirmation page before anything fails. The error lands after the most effort has been spent.</p>
+<h3>Fix</h3><p>Fetch the accounts linked to the user’s phone number, let them tap one, and verify the holder name against Aadhaar or PAN on the same screen. A mismatch stops the flow right there.</p>
+<h3>Framework</h3>
+<div class="flow"><span>Fetch (AA / UPI)</span><i>→</i><span>Select tile</span><i>→</i><span>Verify name</span><i>→</i><span>Verified</span></div>
+<ul style="margin-top:10px"><li>Name match score of 0.85 or higher passes, anything lower is a hard stop.</li><li>API failures show a neutral retry banner, never a mismatch message.</li><li>The confirmation page only accepts accounts in the verified state.</li><li>Three failed attempts in 24 hours triggers a 30-minute cool-down.</li></ul>
+</div>
+<div class="stage"><div class="chips" id="c1"></div><div class="phone"><div class="scr" id="p1"></div></div><p class="cap">Try: select a tile and continue, then use “My account isn’t listed”.</p></div>
+</div></section>
+
+<section id="e2"><div class="w row">
+<div class="issue">
+<h2>DigiLocker fallback and automated parsing</h2><p class="pri">Medium priority</p>
+<h3>Issue today</h3><p>When the DigiLocker bridge stalls, times out or the user forgets their PIN, there is no way out and people abandon onboarding.</p>
+<h3>Fix</h3><p>A latency listener watches the WebView. After 15 seconds without progress, or the moment “Forgot PIN” is tapped, an optional sheet offers a photo of the card. On-device OCR reads it.</p>
+<h3>Framework</h3>
+<div class="flow"><span>DigiLocker loads</span><i>→</i><span>15 s listener</span><i>→</i><span>Stall sheet</span><i>→</i><span>Camera + OCR</span><i>→</i><span>Review</span></div>
+<ul style="margin-top:10px"><li>The WebView stays alive and the sheet dismisses itself if DigiLocker recovers.</li><li>“Keep waiting” restarts the listener once with a 30 second window.</li><li>Fields under 0.90 confidence are flagged amber for review.</li><li>Photos are processed on the device and not uploaded by default.</li></ul>
+</div>
+<div class="stage"><div class="chips" id="c2"></div><div class="phone"><div class="scr" id="p2"></div></div><button class="ghost" id="skip">Skip ahead to 15 s</button></div>
+</div></section>
+
+<section id="e3"><div class="w row">
+<div class="issue">
+<h2>Aadhaar input masking</h2><p class="pri">Friction polish</p>
+<h3>Issue today</h3><p>Three separate boxes treat each segment edge as a forced tab. Press Backspace in an empty box and focus jumps back, then auto-advances forward again. The cursor loops.</p>
+<h3>Fix</h3><p>One continuous field that formats as #### #### ####. The spaces are display only, the value is 12 digits, and the caret stays on the same digit while you edit.</p>
+<h3>Framework</h3>
+<div class="flow"><span>Strip non-digits</span><i>→</i><span>Cap at 12</span><i>→</i><span>Format</span><i>→</i><span>Restore caret</span><i>→</i><span>Verhoeff check</span></div>
+<ul style="margin-top:10px"><li>First digit must be 2 to 9.</li><li>Paste cleans separators automatically.</li><li>Errors are specific: the digit count, or a checksum warning.</li><li>The number is never logged, and the screen blocks screenshots.</li></ul>
+</div>
+<div class="stage"><div class="two">
+<div class="stage"><span class="tag o">Old: three boxes</span><div class="phone"><div class="scr"><div class="bar"><span>‹</span><b>Your Aadhaar</b><i>Step 2/5</i></div><div class="body"><label class="fl" style="margin-top:0">Aadhaar number</label><div class="ob"><input inputmode="numeric" aria-label="Part 1"><input inputmode="numeric" aria-label="Part 2"><input inputmode="numeric" aria-label="Part 3"></div><div class="jumps" id="jc">Forced focus jumps: 0</div><p class="hint">Type 12 digits, click into the middle box and press Backspace on an empty box.</p></div></div></div></div>
+<div class="stage"><span class="tag n">New: one masked field</span><div class="phone"><div class="scr"><div class="bar"><span>‹</span><b>Your Aadhaar</b><i>Step 2/5</i></div><div class="body"><label class="fl" style="margin-top:0" for="nf">Aadhaar number</label><input class="inp" id="nf" inputmode="numeric" placeholder="#### #### ####" autocomplete="off" style="letter-spacing:.06em"><div id="nm" class="hint">Enter 12 digits</div><button class="ghost" id="ex" style="margin-top:14px">Fill a valid example</button><p class="hint" style="margin-top:12px">Edit in the middle, paste “4821-0937-7712”, or Backspace over a space.</p></div><button class="cta" id="nc" disabled>Continue</button></div></div></div>
+</div></div>
+</div></section>
+<script>
+const $=s=>document.querySelector(s),E=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e};
+function chips(id,items,cur,fn){const w=$(id);w.innerHTML='';items.forEach(([k,l])=>{const b=E('button','chip',l);b.setAttribute('aria-pressed',k===cur);b.onclick=()=>fn(k);w.append(b)})}
+/* Epic 1 */
+let s1='tiles',sel=null,att=3,from='tiles',tm;
+const T=[['hdfc','HDFC Bank','Savings','4821','RAVI KUMAR',1],['sbi','State Bank of India','Savings','0937','RAVI KUMAR',1],['icici','ICICI Bank','Current','7702','SK TRADERS',0]];
+const bar=t=>`<div class="bar"><span>‹</span><b>${t}</b><i>Step 3/5</i></div>`;
+function man(b){const bad=b==='err';return bar('Add bank account')+`<div class="body">${b==='err'?`<div class="banner err" role="alert"><b>Name doesn’t match</b>Your ID says RAVI K*****<br>This account is held by SK T******<br>We can only pay out to an account in your own name.<div class="acts"><button data-go="manual">Re-enter details</button><button data-go="tiles">Pick another</button></div></div>`:''}${b==='neu'?`<div class="banner neu"><b>We couldn’t check right now</b>This isn’t a problem with your details. Try again in a moment.</div>`:''}<label class="fl">Account number</label><input class="inp ${bad?'bad':''}" value="5010 0234 8817" readonly><label class="fl">IFSC code</label><input class="inp" value="HDFC0001234" readonly><div class="hint">HDFC Bank, Koramangala, Bengaluru</div><label class="fl">Account holder</label><input class="inp ro" value="Checked when you continue" readonly>${bad?`<p class="hint">Attempts left today: ${att}</p>`:''}</div><button class="cta" data-go="verify2">${b==='neu'?'Retry':'Verify and continue'}</button>`}
+function r1(){let h='';
+if(s1==='tiles')h=bar('Link your bank')+`<div class="body"><p class="lead">We found 3 accounts linked to +91 98XXXXXX21.</p>`+T.map(([k,n,ty,m,nm,ok])=>`<div class="tile ${ok?'':'off'} ${sel===k?'on':''}" ${ok?`data-k="${k}"`:''} role="radio" aria-checked="${sel===k}" aria-disabled="${!ok}" tabindex="0"><span class="logo">${n[0]}</span><div><b>${n}</b><small>${ty} · XXXX ${m}</small>${ok?`<small>Name: ${nm} ✓</small>`:`<small class="e">Name mismatch: ${nm}</small>`}</div><span class="rad"></span></div>`).join('')+`<a class="lnk" data-go="manual">My account isn’t listed</a><div class="note">We never see your PIN or your full account number.</div></div><button class="cta" ${sel?'':'disabled'} data-go="verify1">Continue</button>`;
+else if(s1==='manual')h=man('');else if(s1==='mismatch')h=man('err');else if(s1==='retry')h=man('neu');
+else if(s1==='verifying')h=bar('Verifying')+`<div class="mid"><div class="spin"></div><b>Checking the account holder name</b><span class="note">This takes a few seconds</span></div>`;
+else h=bar('Bank verified')+`<div class="mid"><div class="tick">✓</div><b>Account verified</b><span class="note">HDFC Bank · XXXX 4821<br>Name matches your ID</span></div><button class="cta" data-go="tiles">Continue to confirmation</button>`;
+$('#p1').innerHTML=h;
+chips('#c1',[['tiles','Select account'],['manual','Manual entry'],['mismatch','Hard stop'],['retry','API error'],['ok','Verified']],s1,k=>{clearTimeout(tm);if(k==='tiles')sel=null;s1=k;r1()})}
+$('#p1').onclick=e=>{const t=e.target.closest('[data-k],[data-go]');if(!t)return;if(t.dataset.k){sel=t.dataset.k;return r1()}
+const g=t.dataset.go;if(g==='tiles'){sel=null;s1='tiles';return r1()}if(g==='manual'){s1='manual';return r1()}
+from=g==='verify1'?'tiles':'manual';s1='verifying';r1();tm=setTimeout(()=>{if(from==='tiles')s1='ok';else{att=Math.max(att-1,0);s1='mismatch'}r1()},1100)};
+r1();
+/* Epic 2 */
+let s2='load',t0=0,lim=15000,iv;
+function r2(){let h='';const web=`<div class="bar"><span>✕</span><b>Verify with DigiLocker</b><i>Step 2/5</i></div><div class="url">🔒 digilocker.gov.in</div><div class="body"><div class="mid" style="padding:10px"><div class="logo" style="width:52px;height:52px">D</div><b>${s2==='stall'?'Still waiting for DigiLocker…':'Waiting for DigiLocker…'}</b><div class="spin"></div><span class="note">Enter your 6-digit security PIN</span><div class="pin"><i>•</i><i>•</i><i></i><i></i><i></i><i></i></div><a class="lnk" data-go="stall" style="margin:0">Forgot PIN?</a></div><div class="cd" id="cd"></div></div>`;
+if(s2==='load')h=web;else if(s2==='stall')h=web+`<div class="sheet" role="dialog" aria-label="Photo option"><b>System running slow?</b><p>Snap a photo of your card instead.</p><button class="cta" data-go="cam">Use camera</button><button class="sec" data-go="wait">Keep waiting for DigiLocker</button></div>`;
+else if(s2==='cam')h=`<div class="bar"><span>‹</span><b>Scan your Aadhaar (front)</b><i></i></div><div class="body"><div class="cam">Align the card inside the frame</div><p class="warn">Too much glare. Tilt the card.</p><p class="note">Captures when the card is steady. The photo stays on your phone.</p></div><button class="cta" data-go="rev">Capture</button>`;
+else if(s2==='rev')h=`<div class="bar"><span>‹</span><b>Review your details</b><i></i></div><div class="body"><div class="rv"><span>Name</span>RAVI KUMAR ✓</div><div class="rv"><span>Date of birth</span>14/03/1998 ✓</div><div class="rv"><span>Aadhaar</span>XXXX XXXX 4821 ✓</div><div class="rv"><span>Address</span><em>Check this</em></div><p class="note" style="margin-top:10px">Amber fields were read with low confidence. Tap to edit.</p></div><button class="cta" data-go="done">Confirm and continue</button><button class="sec" data-go="cam">Retake</button>`;
+else h=`<div class="mid"><div class="tick">✓</div><b>KYC verified</b><span class="note">Next: link your bank</span></div><button class="cta" data-go="load">Replay</button>`;
+$('#p2').innerHTML=h;
+chips('#c2',[['load','Loading'],['stall','Stalled'],['cam','Camera'],['rev','Review']],s2,k=>{lim=15000;go2(k)})}
+function go2(s){clearInterval(iv);s2=s;r2();if(s==='load'){t0=Date.now();iv=setInterval(()=>{const el=Date.now()-t0,c=$('#cd');if(c)c.textContent='Listener: '+(Math.min(el,lim)/1000).toFixed(1)+' s of '+lim/1000+' s';if(el>=lim)go2('stall')},100)}}
+$('#p2').onclick=e=>{const t=e.target.closest('[data-go]');if(!t)return;const g=t.dataset.go;if(g==='wait'){lim=30000;return go2('load')}if(g==='load')lim=15000;go2(g)};
+$('#skip').onclick=()=>{if(s2!=='load')go2('load');t0=Date.now()-lim+700};
+go2('load');
+/* Epic 3 */
+const ob=[...document.querySelectorAll('.ob input')];let jc=0;
+const bump=()=>{$('#jc').textContent='Forced focus jumps: '+(++jc)};
+ob.forEach((b,i)=>{b.oninput=()=>{b.value=b.value.replace(/\D/g,'').slice(0,4);if(b.value.length>=4&&ob[i+1])ob[i+1].focus()};b.onkeydown=e=>{if(e.key==='Backspace'&&!b.value&&ob[i-1])ob[i-1].focus()};b.onfocus=()=>{if(b.value.length>=4&&ob[i+1]){bump();setTimeout(()=>ob[i+1].focus(),0)}}});
+const D=[[0,1,2,3,4,5,6,7,8,9],[1,2,3,4,0,6,7,8,9,5],[2,3,4,0,1,7,8,9,5,6],[3,4,0,1,2,8,9,5,6,7],[4,0,1,2,3,9,5,6,7,8],[5,9,8,7,6,0,4,3,2,1],[6,5,9,8,7,1,0,4,3,2],[7,6,5,9,8,2,1,0,4,3],[8,7,6,5,9,3,2,1,0,4],[9,8,7,6,5,4,3,2,1,0]],P=[[0,1,2,3,4,5,6,7,8,9],[1,5,7,6,2,8,3,0,9,4],[5,8,0,3,7,9,6,1,4,2],[8,9,1,6,0,4,3,5,2,7],[9,4,5,3,1,2,6,8,7,0],[4,2,8,6,5,7,3,9,0,1],[2,7,9,3,8,0,6,4,1,5],[7,0,4,6,9,1,3,2,5,8]],INV=[0,4,3,2,1,5,6,7,8,9];
+const vOK=s=>{let c=0;[...s].reverse().forEach((x,i)=>c=D[c][P[i%8][+x]]);return c===0};
+const chk=s=>{let c=0;[...s].reverse().forEach((x,i)=>c=D[c][P[(i+1)%8][+x]]);return INV[c]};
+const nf=$('#nf'),nm=$('#nm'),nc=$('#nc');
+function v3(d,blur){let ok=false,m='Enter 12 digits',c='hint';
+if(d.length){if(+d[0]<2){m='Aadhaar can’t start with 0 or 1';c='er'}else if(d.length<12){m=blur?`Aadhaar has 12 digits, you entered ${d.length}`:`${d.length} of 12 digits`;c=blur?'er':'hint'}else if(!vOK(d)){m='This number doesn’t look right. Check the last digits.';c='er'}else{m='✓ Looks valid';c='ok';ok=true}}
+nm.textContent=m;nm.className=c;nf.classList.toggle('bad',c==='er');nc.disabled=!ok}
+function fmt(){const pos=nf.selectionStart,before=nf.value.slice(0,pos).replace(/\D/g,'').length,d=nf.value.replace(/\D/g,'').slice(0,12),f=d.replace(/(\d{4})(?=\d)/g,'$1 ');nf.value=f;let np=0,c=0;while(np<f.length&&c<before){if(/\d/.test(f[np]))c++;np++}nf.setSelectionRange(np,np);v3(d)}
+nf.oninput=fmt;nf.onblur=()=>v3(nf.value.replace(/\D/g,''),true);
+nf.onkeydown=e=>{const p=nf.selectionStart;if(e.key==='Backspace'&&p===nf.selectionEnd&&nf.value[p-1]===' '){e.preventDefault();nf.setRangeText('',p-2,p,'end');fmt()}};
+$('#ex').onclick=()=>{let b=String(2+Math.floor(Math.random()*8));for(let i=0;i<10;i++)b+=Math.floor(Math.random()*10);nf.value=b+chk(b);fmt();nf.focus()};
+</script>
+</body></html>
